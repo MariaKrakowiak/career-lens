@@ -1,0 +1,24 @@
+bundle:
+  name: career-lens
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog
+    default: main
+
+  schema:
+    description: Unity Catalog schema
+    default: career_lens
+
+targets:
+
+  dev:
+    mode: development
+    default: true
+
+    variables:
+      catalog: main
+      schema: career_lens
