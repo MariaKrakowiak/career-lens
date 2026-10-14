@@ -1,0 +1,25 @@
+command:
+  - streamlit
+  - run
+  - app.py
+  - --server.port
+  - "8000"
+  - --server.address
+  - "0.0.0.0"
+
+env:
+
+  - name: STREAMLIT_GATHER_USAGE_STATS
+    value: "false"
+
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+
+  - name: AI_QUERY_ENDPOINT
+    value: "system.ai.meta-llama-3-3-70b-instruct"
+
+  - name: UC_CATALOG
+    value: "workspace"
+
+  - name: UC_SCHEMA
+    value: "career_lens"
