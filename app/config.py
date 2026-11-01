@@ -11,6 +11,8 @@ class Settings:
     catalog: str
     schema: str
 
+    save_enabled: bool
+
     @property
     def analysis_table(self) -> str:
         return (
@@ -40,6 +42,14 @@ def get_settings() -> Settings:
         "career_lens"
     )
 
+    save_enabled = (
+        os.getenv(
+            "SAVE_ANALYSES",
+            "false"
+        ).lower()
+        in ("true", "1", "yes")
+    )
+
     missing = []
 
     if not warehouse_id:
@@ -63,4 +73,5 @@ def get_settings() -> Settings:
         ai_query_endpoint=ai_query_endpoint,
         catalog=catalog,
         schema=schema,
+        save_enabled=save_enabled,
     )

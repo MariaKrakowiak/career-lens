@@ -23,3 +23,6 @@ env:
 
   - name: UC_SCHEMA
     value: "career_lens"
+
+  - name: SAVE_ANALYSES
+    value: "true"

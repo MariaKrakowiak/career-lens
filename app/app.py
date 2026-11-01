@@ -729,15 +729,20 @@ if analysis:
         st.json(extracted)
 
 
-    st.divider()
+    if settings.save_enabled:
 
-    st.subheader(
-        "Save analysis"
-    )
+        st.divider()
 
-    if st.button(
-        "💾 Save analysis to Delta",
-        use_container_width=True,
+        st.subheader(
+            "Save analysis"
+        )
+
+    if (
+        settings.save_enabled
+        and st.button(
+            "💾 Save analysis to Delta",
+            use_container_width=True,
+        )
     ):
 
         try:
@@ -855,16 +860,23 @@ with fc2:
     )
 
 with fc3:
-    st.markdown(
-        """
+    if settings.save_enabled:
+        card = """
     <div class="feature-card">
         <div class="feature-icon green">💾</div>
         <h3>Save</h3>
         <p>Store analyses in Delta Lake to track your job applications over time.</p>
     </div>
-    """,
-        unsafe_allow_html=True,
-    )
+    """
+    else:
+        card = """
+    <div class="feature-card">
+        <div class="feature-icon green">📝</div>
+        <h3>Decide</h3>
+        <p>Get a clear recommendation on whether an application is worth pursuing.</p>
+    </div>
+    """
+    st.markdown(card, unsafe_allow_html=True)
 
 st.markdown(
     """
