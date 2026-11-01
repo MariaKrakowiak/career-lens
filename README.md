@@ -1,119 +1,142 @@
-# Career Copilot V1
+# 🎯 Career Lens
 
-Personal AI recruitment assistant built with Databricks.
+> ✨ An AI-powered job-matching assistant built with **Databricks** —
+> compare a CV with a job description, get an explainable match score,
+> skill gaps and an application recommendation, all in one web UI.
 
-The application compares a candidate's CV with a job description and produces:
+## 🔭 Overview
 
-- overall match score
-- must-have skill coverage
-- nice-to-have skill coverage
-- responsibility coverage
-- candidate evidence
-- missing skills
-- ATS keyword gaps
-- application recommendation
+The application helps job seekers:
 
-The project is designed as a personal job-search assistant, not as a hiring decision system.
+- 🔎 **analyze the match** — compare a CV with a job description side by side
+- 📄 **flexible input** — paste plain text or upload a PDF for both documents
+- 📊 **explainable score** — overall match with must-have, nice-to-have, responsibility and profile-fit breakdown
+- 🧩 **skill gaps** — missing skills and ATS keyword gaps at a glance
+- 📝 **recommendation** — whether the application is worth pursuing
+- 💾 **save analyses** — store results in Delta Lake to track applications over time
 
----
+The project is designed as a **personal job-search assistant**, not as a
+hiring or candidate-selection system.
 
-## Architecture
+## 🏗️ Architecture
 
-CV + Job Description
-        |
-        v
-+-----------------------+
-| Streamlit Application |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| Databricks SQL        |
-| ai_query()            |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| Structured extraction |
-| Job + Candidate       |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| Deterministic matcher |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| Match report          |
-+-----------------------+
+```
+CV + Job Description 📄
+      |
+      v
+Streamlit App 🎨
+      |
+      v
+Databricks SQL Warehouse ⚙️
+      |
+      v
+ai_query() — structured extraction 🤖
+      |
+      v
+Job requirements + Candidate evidence 🧠
+      |
+      v
+Deterministic matcher 🧮
+      |
+      v
+Match report + recommendation 📊
+      |
+      v
+Delta Lake (workspace.career_lens.analyses) 🗄️
+```
 
----
+## 🛠️ Technologies
 
-## Technologies
+- 🎨 **Streamlit** — web UI
+- 🐍 **Python** — application logic and deterministic matching
+- ⚙️ **Databricks SQL Warehouse** — AI function execution
+- 🤖 **Databricks AI Functions** — `ai_query` for structured extraction
+- 🗄️ **Delta Lake** + **Unity Catalog** — analysis storage
+- 📄 **PyPDF** — PDF text extraction
 
-- Databricks
-- Databricks SQL Warehouse
-- Unity Catalog
-- Databricks AI Functions
-- `ai_query`
-- Streamlit
-- Python
-- Delta Lake
-- PyPDF
+## 🔑 Requirements
 
----
+1. 🧱 Databricks workspace with Unity Catalog
+2. ⚙️ SQL Warehouse that supports `ai_query`
+3. 🤖 Model endpoint accessible through `ai_query`
+4. 🎨 Databricks Apps (for the hosted deployment)
 
-## Requirements
+## 🤖 Model
 
-You need:
+The model endpoint is configured with the `AI_QUERY_ENDPOINT` environment
+variable, for example:
 
-1. Databricks workspace
-2. Unity Catalog
-3. SQL Warehouse
-4. Model Serving / Foundation Model endpoint accessible through `ai_query`
-5. Databricks Apps
+```bash
+system.ai.meta-llama-3-3-70b-instruct
+```
 
-The SQL Warehouse must support `ai_query`.
+Use any model-serving endpoint available in your workspace — do not
+hard-code a model your workspace does not provide.
 
----
+## 🗄️ Unity Catalog
 
-## Model
+Analyses are stored in:
 
-The model endpoint is configured through:
+```
+catalog: workspace
+schema:  career_lens
+table:   workspace.career_lens.analyses
+```
 
-AI_QUERY_ENDPOINT
+Create the schema and table with `sql/001_create_tables.sql`, or point
+the application at a different catalog and schema through the
+`UC_CATALOG` and `UC_SCHEMA` environment variables.
 
-For example:
-
-system.ai.gpt-oss-20b
-
-or another model-serving endpoint available in your workspace.
-
-Do not hard-code a model that your workspace does not provide.
-
----
-
-## Unity Catalog
-
-The project creates:
-
-catalog:
-main
-
-schema:
-career_copilot
-
-table:
-main.career_copilot.analyses
-
-Change these values if necessary.
-
----
-
-## Installation
+## 📦 Installation
 
 Install the Python dependencies:
 
 ```bash
 pip install -r app/requirements.txt
+```
+
+## 🚀 Databricks deployment
+
+The application source lives in the `app/` folder and is deployed as a
+Databricks App:
+
+```bash
+databricks apps deploy career-lens --source-code-path <repo>/app
+```
+
+Configuration is injected through `app.yaml` environment variables, with
+the SQL Warehouse bound through the `sql-warehouse` resource — no
+workspace-specific identifiers are stored in the repository.
+
+## 🌍 External deployment
+
+The app also runs on any Streamlit-capable host such as **Render**.
+All configuration is provided through environment variables
+(`DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `DATABRICKS_WAREHOUSE_ID`,
+`AI_QUERY_ENDPOINT`, `UC_CATALOG`, `UC_SCHEMA`). Keep the access token
+in the host's secret store — never in the repository.
+
+## 🔮 Future versions
+
+The project uses versioned branches:
+
+- ✅ **v1** — current stable version
+- 🚧 **master** — active development line
+
+New functionality will be developed on `master` and feature branches.
+When a new version reaches a stable, deployable state, it will be
+snapshotted as `v2`, `v3`, and so on.
+
+## ✅ Project requirements
+
+This project demonstrates:
+
+- ✅ Databricks Apps
+- ✅ Databricks SQL Warehouse
+- ✅ Unity Catalog
+- ✅ Databricks AI Functions (`ai_query`)
+- ✅ Delta Lake
+- ✅ Unstructured text processing (PDF extraction)
+- ✅ Streamlit web UI
+- ✅ Deterministic, explainable matching
+- ✅ External deployment (Render)
