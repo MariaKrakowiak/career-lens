@@ -110,7 +110,10 @@ workspace-specific identifiers are stored in the repository.
 
 ## 🌍 External deployment
 
-The app also runs on any Streamlit-capable host such as **Render**.
+The app is also deployed on Render for public access:
+
+🔗 **https://career-lens-u45j.onrender.com/**
+
 All configuration is provided through environment variables
 (`DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `DATABRICKS_WAREHOUSE_ID`,
 `AI_QUERY_ENDPOINT`, `UC_CATALOG`, `UC_SCHEMA`). Keep the access token
