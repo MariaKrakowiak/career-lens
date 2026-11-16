@@ -1,4 +1,5 @@
 import json
+import time
 
 from databricks import sql
 from databricks.sdk.core import Config
@@ -24,13 +25,40 @@ class DatabricksSQL:
 
     def connection(self):
 
-        return sql.connect(
-            server_hostname=self.server_hostname,
-            http_path=self.http_path,
-            credentials_provider=(
-                lambda: self.config.authenticate
-            ),
-        )
+        # "Cannot create the resource" is a transient serverless
+        # provisioning failure. The connector does not retry it (it
+        # arrives as HTTP 400), so retry here with backoff.
+
+        last_error = None
+
+        for attempt in range(4):
+
+            try:
+
+                return sql.connect(
+                    server_hostname=self.server_hostname,
+                    http_path=self.http_path,
+                    credentials_provider=(
+                        lambda: self.config.authenticate
+                    ),
+                )
+
+            except Exception as error:
+
+                if (
+                    "Cannot create the resource"
+                    not in str(error)
+                ):
+
+                    raise
+
+                last_error = error
+
+                time.sleep(
+                    2 * (attempt + 1)
+                )
+
+        raise last_error
 
     def ai_query(
         self,
